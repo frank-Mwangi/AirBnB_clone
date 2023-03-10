@@ -18,9 +18,19 @@ class BaseModel:
             created_at (datetime): date/time the instance was created
             updated_at (datetime): date/time the instance was updated
         """
-        self.id = str(uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        if kwargs:
+            for key, value in kwargs.items():
+                if key == 'created_at' or key == "updated_at":
+                    value = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
+                if key != '__class__':
+                    setattr(self, key, value)
+            self.id = kwargs.get('id', str(uuid4()))
+            self.created_at = kwargs.get('created_at', datetime.now())
+            self.updated_at = kwargs.get('updated_at', datetime.now())
+        else:
+            self.id = str(uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = datetime.now()
 
     def __str__(self):
         """Return a string represetation of an Base instance."""
